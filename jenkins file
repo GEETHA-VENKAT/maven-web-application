@@ -1,0 +1,41 @@
+node{
+     
+    def mavenHome = tool name: "maven3.8.2"
+
+   stage('checkoutcode')
+	{
+	git branch: 'development', credentialsId: '642df99a-2201-4e20-9e97-670be6b6bea9', url:
+        'https://github.com/MithunTechnologiesDevOps/maven-web-application.git'
+	}
+     
+    stage('build)
+	{
+ 	sh "${mavenHome}/bin/mvn clean package"
+	}
+ 	
+     stage('sonarqubeReport')
+       {
+	sh "${mavenHome}/bin/mvn clean sonar:sonar"
+	}
+
+
+	stage('UploadArtifactintoNexus')
+       {
+	sh "${mavenHome}/bin/mvn clean deploy"
+	}
+	
+	stage('DeployAppIntoTomcatServer')
+	{
+	sshagent(['007f4e1b-8753-4057-bb39-c5774197ac65'])
+	 {
+	  sh "scp -o  StrictHostKeyChecking=no target/maven-web-application.war 
+          ec2-user@52.66.116.188:/opt/apache-tomcat-9.0.52/webapps/"
+          }
+         }
+	stage('SendEmailNotification'){
+	emailext body: '''Build Over....!!
+
+       Regards
+        MithunTECHNOLOGIES.''', subject: 'Build Over....!!', to: 'geethavenkat5789@gmail.com'
+       }
+   }
