@@ -18,7 +18,7 @@ node{
 	sh "${mavenHome}/bin/mvn clean sonar:sonar"
 	}
 
-
+       /*
 	stage('UploadArtifactintoNexus')
        {
 	sh "${mavenHome}/bin/mvn clean deploy"
@@ -32,6 +32,7 @@ node{
           ec2-user@52.66.116.188:/opt/apache-tomcat-9.0.52/webapps/"
           }
          }
+	 */
 	stage('SendEmailNotification'){
 	emailext body: '''Build Over....!!
 
